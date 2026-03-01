@@ -1,15 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Chatbot AI Project</title>
+<meta charset="UTF-8">
+<title>AI Learning Assistant</title>
+<style>
+body{
+    font-family: Arial;
+    background:#f4f6f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.container{
+    width:400px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+#chat{
+    height:300px;
+    overflow-y:auto;
+    border:1px solid #ddd;
+    padding:10px;
+    margin-bottom:10px;
+}
+input{
+    width:75%;
+    padding:8px;
+}
+button{
+    padding:8px 10px;
+    background:#007bff;
+    color:white;
+    border:none;
+    border-radius:5px;
+}
+</style>
 </head>
 <body>
-    <h1>Chào mừng đến với Chatbot AI</h1>
-    <p>Website dự án của chúng tôi</p>
 
-    <button onclick="alert('Chatbot sắp ra mắt!')">
-        Thử Chatbot
-    </button>
+<div class="container">
+<h2>AI Learning Assistant</h2>
+<div id="chat"></div>
+<input type="text" id="message" placeholder="Nhập câu hỏi...">
+<button onclick="sendMessage()">Gửi</button>
+</div>
+
+<script>
+async function sendMessage(){
+    let message = document.getElementById("message").value;
+    document.getElementById("chat").innerHTML += "<p><b>Bạn:</b> "+message+"</p>";
+
+    let response = await fetch("https://YOUR_BACKEND_URL/chat",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({message})
+    });
+
+    let data = await response.json();
+    document.getElementById("chat").innerHTML += "<p><b>AI:</b> "+data.reply+"</p>";
+}
+</script>
+
 </body>
 </html>
