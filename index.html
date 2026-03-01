@@ -3,77 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Learning Assistant Pro</title>
+    <title>AI Study Buddy Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .chat-container::-webkit-scrollbar { width: 5px; }
         .chat-container::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        .typing-animation span { animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-msg { animation: fadeIn 0.3s ease-out; }
     </style>
 </head>
-<body class="bg-[#f8fafc] h-screen flex flex-col font-sans text-slate-900">
+<body class="bg-[#f1f5f9] h-screen flex flex-col font-sans text-slate-800">
 
-    <header class="bg-white/80 backdrop-blur-md border-b sticky top-0 z-10 p-4 shadow-sm">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
+    <header class="bg-white border-b shadow-sm p-4 sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-200">
-                    <i class="fas fa-brain fa-lg"></i>
+                <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-md">
+                    <i class="fas fa-robot fa-lg"></i>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight">AI Study <span class="text-blue-600">Pro</span></h1>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900">AI Study Buddy</h1>
             </div>
-            <div class="flex items-center gap-2 bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-semibold border border-green-100">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                Hệ thống sẵn sàng
+            <div class="text-xs font-bold text-green-500 bg-green-50 px-3 py-1 rounded-full border border-green-100 flex items-center gap-2">
+                <span class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+                ONLINE
             </div>
         </div>
     </header>
 
-    <main id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full chat-container">
-        <div class="flex items-start gap-3 animate-fade-in">
-            <div class="bg-blue-100 text-blue-600 p-2 rounded-full"><i class="fas fa-robot"></i></div>
-            <div class="bg-white border border-slate-200 rounded-2xl rounded-bl-none p-4 shadow-sm max-w-[85%] leading-relaxed">
-                Chào bạn! Mình là trợ lý học tập thông minh. Bạn cần mình giải đáp kiến thức hay tóm tắt bài học nào không?
+    <main id="chat-box" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full chat-container">
+        <div class="flex justify-start animate-msg">
+            <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-bl-none shadow-sm max-w-[85%] leading-relaxed">
+                Chào bạn! Mình là trợ lý học tập chạy bằng **Gemini API**. Bạn cần mình giải bài tập hay tóm tắt tài liệu gì không? 📚
             </div>
         </div>
     </main>
 
-    <footer class="p-4 bg-white border-t sticky bottom-0">
-        <div class="max-w-4xl mx-auto flex gap-2 items-center">
+    <footer class="p-4 bg-white border-t">
+        <div class="max-w-4xl mx-auto flex gap-3 items-center">
             <input type="text" id="userInput" 
-                class="flex-1 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm bg-slate-50" 
+                class="flex-1 border border-slate-300 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all" 
                 placeholder="Nhập câu hỏi tại đây...">
             <button onclick="handleSend()" id="sendBtn"
-                class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition-all shadow-lg shadow-blue-100 active:scale-95 disabled:bg-slate-300">
-                <i class="fas fa-paper-plane"></i>
+                class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition-all shadow-lg active:scale-95 disabled:bg-slate-300">
+                <i class="fas fa-paper-plane fa-lg"></i>
             </button>
         </div>
     </footer>
 
     <script>
-        const chatContainer = document.getElementById('chat-container');
+        const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
         
-        // Cập nhật link Render chính xác của bạn
+        // LINK BACKEND RENDER CỦA BẠN
         const API_URL = "https://ai-backend-logic.onrender.com/chat";
 
         function appendMessage(role, text) {
             const isUser = role === 'user';
             const msgHtml = `
-                <div class="flex ${isUser ? 'justify-end' : 'justify-start'} gap-3 animate-fade-in">
-                    ${!isUser ? '<div class="bg-blue-100 text-blue-600 p-2 h-fit rounded-full"><i class="fas fa-robot"></i></div>' : ''}
-                    <div class="${isUser ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-slate-200 rounded-bl-none shadow-sm'} rounded-2xl p-4 max-w-[80%] leading-relaxed">
+                <div class="flex ${isUser ? 'justify-end' : 'justify-start'} animate-msg">
+                    <div class="${isUser ? 'bg-blue-600 text-white shadow-blue-100' : 'bg-white border border-slate-200 text-slate-700 shadow-sm'} rounded-2xl px-5 py-3.5 max-w-[85%] shadow-md leading-relaxed">
                         ${text.replace(/\n/g, '<br>')}
                     </div>
-                    ${isUser ? '<div class="bg-slate-200 text-slate-500 p-2 h-fit rounded-full self-end"><i class="fas fa-user"></i></div>' : ''}
                 </div>`;
-            chatContainer.insertAdjacentHTML('beforeend', msgHtml);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatBox.insertAdjacentHTML('beforeend', msgHtml);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         async function handleSend() {
@@ -84,36 +78,46 @@
             userInput.value = '';
             sendBtn.disabled = true;
 
-            // Loading state
+            // Hiệu ứng đang xử lý
             const loadingId = 'loading-' + Date.now();
-            chatContainer.insertAdjacentHTML('beforeend', `
-                <div id="${loadingId}" class="flex items-start gap-3 text-slate-400 italic text-sm animate-pulse">
-                    <div class="bg-blue-50 text-blue-400 p-2 rounded-full"><i class="fas fa-robot"></i></div>
-                    <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-4">AI đang suy nghĩ...</div>
+            chatBox.insertAdjacentHTML('beforeend', `
+                <div id="${loadingId}" class="flex justify-start animate-pulse">
+                    <div class="bg-white border border-slate-200 px-5 py-3 rounded-2xl shadow-sm italic text-slate-400">
+                        AI đang suy nghĩ...
+                    </div>
                 </div>`);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
                 const response = await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ message: message })
                 });
                 
                 if (!response.ok) throw new Error('Network error');
                 
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
-                appendMessage('ai', data.reply);
+                
+                if (data.reply) {
+                    appendMessage('ai', data.reply);
+                } else {
+                    throw new Error('Empty response');
+                }
             } catch (error) {
                 document.getElementById(loadingId).remove();
-                appendMessage('ai', "⚠️ Có chút trục trặc khi kết nối. Có thể server đang 'tỉnh giấc' sau 50 giây không hoạt động. Bạn hãy thử lại sau vài giây nhé!");
+                appendMessage('ai', "❌ Lỗi: Không thể kết nối tới server. Có thể do server đang khởi động lại (mất khoảng 50 giây). Bạn hãy đợi một chút rồi thử lại nhé!");
+                console.error("Lỗi kết nối:", error);
             } finally {
                 sendBtn.disabled = false;
             }
         }
 
-        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+        // Gửi tin nhắn bằng phím Enter
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
     </script>
 </body>
 </html>
