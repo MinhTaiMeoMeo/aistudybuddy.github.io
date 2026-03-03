@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Buddy Vision</title>
+    <title>AI Study Buddy Vision - Pro Blue</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
@@ -11,36 +11,73 @@
     </script>
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        .chat-box { height: calc(100vh - 180px); }
-        .preview-img { max-height: 100px; border-radius: 10px; display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); }
+        .chat-box { height: calc(100vh - 180px); scrollbar-width: thin; scrollbar-color: #3b82f6 #f1f5f9; }
+        .chat-box::-webkit-scrollbar { width: 6px; }
+        .chat-box::-webkit-scrollbar-track { background: #f1f5f9; }
+        .chat-box::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        
+        .preview-img { max-height: 120px; border-radius: 12px; display: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); transition: all 0.3s ease; }
+        
+        .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        
+        .ai-bubble { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 2px 20px 20px 20px; position: relative; }
+        .user-bubble { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 20px 20px 2px 20px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2); }
+        
+        .pulse-online { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 rgba(16, 185, 129, 0.4); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     </style>
 </head>
-<body class="bg-amber-50 flex flex-col h-screen font-sans">
+<body class="flex flex-col h-screen overflow-hidden">
 
-    <header class="bg-orange-600 p-4 shadow-lg flex justify-between items-center sticky top-0 z-10">
-        <div class="flex items-center gap-2 text-white">
-            <i class="fas fa-camera-retro text-2xl"></i>
-            <h1 class="font-bold text-xl">AI Study Buddy Pro</h1>
+    <header class="glass-effect border-b border-blue-100 p-4 shadow-sm flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 p-2.5 rounded-xl shadow-blue-200 shadow-lg">
+                <i class="fas fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-gray-800 text-lg leading-tight">AI Study Buddy Pro</h1>
+                <div class="flex items-center gap-1.5">
+                    <div class="pulse-online"></div>
+                    <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Trực tuyến</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-4 text-gray-400">
+            <button class="hover:text-blue-600 transition-colors"><i class="far fa-question-circle text-xl"></i></button>
+            <button class="hover:text-blue-600 transition-colors"><i class="fas fa-cog text-xl"></i></button>
         </div>
     </header>
 
-    <main id="chat-display" class="chat-box overflow-y-auto p-4 space-y-6 max-w-3xl mx-auto w-full"></main>
+    <main id="chat-display" class="chat-box overflow-y-auto p-4 space-y-6 max-w-4xl mx-auto w-full"></main>
 
-    <footer class="p-4 bg-white border-t-2 border-orange-100 shadow-lg">
-        <div class="max-w-3xl mx-auto space-y-2">
-            <img id="imgPreview" class="preview-img border-2 border-orange-400 mb-2">
-            <div class="flex gap-2 items-center">
-                <button onclick="document.getElementById('fileInput').click()" class="text-orange-600 p-3 hover:bg-orange-50 rounded-xl transition-all">
-                    <i class="fas fa-image text-2xl"></i>
+    <footer class="p-4 glass-effect border-t border-blue-100 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <div class="max-w-3xl mx-auto">
+            <div class="relative">
+                <img id="imgPreview" class="preview-img border-2 border-blue-400 mb-3 ml-2 animate-bounce-short">
+                <button id="removeImg" onclick="clearImage()" class="hidden absolute -top-2 left-28 bg-red-500 text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center shadow-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="flex gap-3 items-center bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-blue-400 transition-all">
+                <button onclick="document.getElementById('fileInput').click()" class="bg-white text-blue-600 w-11 h-11 flex items-center justify-center hover:bg-blue-50 rounded-xl shadow-sm transition-all border border-gray-100">
+                    <i class="fas fa-image text-xl"></i>
                 </button>
                 <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="previewFile()">
                 
-                <input type="text" id="userInput" class="flex-1 bg-slate-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-orange-500" placeholder="Hỏi hoặc gửi ảnh bài tập...">
+                <input type="text" id="userInput" 
+                    class="flex-1 bg-transparent px-2 py-3 outline-none text-gray-700 placeholder-gray-400 text-sm" 
+                    placeholder="Nhập câu hỏi hoặc tải ảnh đề bài...">
                 
-                <button onclick="send()" id="sendBtn" class="bg-orange-600 text-white w-14 h-14 rounded-2xl hover:bg-orange-700 flex items-center justify-center shadow-lg transition-all active:scale-90">
-                    <i class="fas fa-paper-plane"></i>
+                <button onclick="send()" id="sendBtn" 
+                    class="bg-blue-600 text-white w-12 h-12 rounded-xl hover:bg-blue-700 flex items-center justify-center shadow-blue-200 shadow-lg transition-all active:scale-95 group">
+                    <i class="fas fa-paper-plane group-hover:rotate-12 transition-transform"></i>
                 </button>
             </div>
+            <p class="text-[10px] text-center text-gray-400 mt-2">Hỗ trợ giải Toán, Lý, Hóa qua hình ảnh và văn bản</p>
         </div>
     </footer>
 
@@ -55,22 +92,34 @@
             reader.onloadend = () => {
                 currentBase64 = reader.result;
                 const img = document.getElementById('imgPreview');
+                const btn = document.getElementById('removeImg');
                 img.src = currentBase64;
                 img.style.display = 'block';
+                btn.style.display = 'flex';
             };
             if (file) reader.readAsDataURL(file);
         }
 
+        function clearImage() {
+            currentBase64 = null;
+            document.getElementById('imgPreview').style.display = 'none';
+            document.getElementById('removeImg').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+        }
+
         function addMsg(role, text, img = null) {
             const div = document.createElement('div');
-            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in`;
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
             
             const isAI = role === 'ai';
             div.innerHTML = `
-                <div class="group relative max-w-[85%] space-y-2">
-                    ${img ? `<img src="${img}" class="rounded-xl max-w-xs border-2 border-orange-200">` : ''}
-                    <div class="${isAI ? 'bg-white border-2 border-orange-50' : 'bg-orange-500 text-white'} p-4 rounded-3xl shadow-sm leading-relaxed">
-                        ${text.replace(/\n/g, '<br>')}
+                <div class="max-w-[85%] flex ${isAI ? 'flex-row' : 'flex-row-reverse'} items-end gap-2">
+                    ${isAI ? '<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs shadow-sm flex-shrink-0"><i class="fas fa-robot"></i></div>' : ''}
+                    <div class="space-y-1">
+                        ${img ? `<div class="relative group cursor-pointer"><img src="${img}" class="rounded-xl max-w-[200px] border-2 border-white shadow-md hover:scale-[1.02] transition-transform"></div>` : ''}
+                        <div class="${isAI ? 'ai-bubble text-gray-700 shadow-sm p-3.5' : 'user-bubble text-white p-3.5'} text-sm leading-relaxed">
+                            ${text.replace(/\n/g, '<br>')}
+                        </div>
                     </div>
                 </div>`;
             
@@ -86,24 +135,39 @@
 
             addMsg('user', msg, currentBase64);
             
-            // Xóa preview ảnh sau khi gửi
             const imgBase64ToSend = currentBase64;
-            currentBase64 = null;
-            document.getElementById('imgPreview').style.display = 'none';
+            clearImage();
             input.value = '';
 
             try {
+                // Hiệu ứng đang suy nghĩ
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = "ai-loading";
+                loadingDiv.className = "flex justify-start mb-4 animate-pulse";
+                loadingDiv.innerHTML = `<div class="bg-gray-100 px-4 py-2 rounded-2xl text-xs text-gray-400">Gia sư đang phân tích...</div>`;
+                chatDisplay.appendChild(loadingDiv);
+                chatDisplay.scrollTop = chatDisplay.scrollHeight;
+
                 const res = await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: msg, image: imgBase64ToSend })
                 });
+                
+                document.getElementById('ai-loading').remove();
+                
                 const data = await res.json();
-                addMsg('ai', data.reply || "Gia sư đang suy nghĩ...");
+                addMsg('ai', data.reply || "Gia sư đã nhận được tin nhắn nhưng chưa có phản hồi.");
             } catch (err) {
-                addMsg('ai', "❌ Lỗi: Có thể ảnh quá nặng hoặc AI hết lượt dùng.");
+                if(document.getElementById('ai-loading')) document.getElementById('ai-loading').remove();
+                addMsg('ai', "❌ Lỗi kết nối: AI không phản hồi. Vui lòng thử lại với ảnh dung lượng thấp hơn.");
             }
         }
+
+        // Gửi bằng phím Enter
+        document.getElementById('userInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') send();
+        });
     </script>
 </body>
 </html>
